@@ -2,9 +2,8 @@ python-dotenv
 langchain
 openai
 pinecone-client
-unstructured[pdf]==0.7.12
+unstructured
 tabulate
 pdf2image
 streamlit
 tiktoken
-

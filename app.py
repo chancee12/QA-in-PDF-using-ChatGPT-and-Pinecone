@@ -45,7 +45,7 @@ def embedding_db():
     doc_db = Pinecone.from_documents(
         docs_split, 
         embeddings, 
-        index_name='langchain-demo-indexes'
+        index_name='dod'
     )
     return doc_db
 
@@ -63,7 +63,7 @@ def retrieval_answer(query):
     return result
 
 def main():
-    st.title("ChanceeBot App for DOD Documents")
+    st.title("ChanceeBot App for DOD Docs PDF")
 
     text_input = st.text_input("Ask your query...") 
     if st.button("Ask Query"):
