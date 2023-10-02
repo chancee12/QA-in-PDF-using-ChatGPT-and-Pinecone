@@ -7,4 +7,4 @@ tabulate
 pdf2image
 streamlit
 tiktoken
-unstructured[pdf]
+unstructured==0.7.12
