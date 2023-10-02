@@ -1,9 +1,11 @@
 python-dotenv
-langchain
+langchain==0.0.251
 openai
 pinecone-client
-unstructured
+unstructured==0.7.12
 tabulate
 pdf2image
+pdfminer
+pillow
 streamlit
 tiktoken
