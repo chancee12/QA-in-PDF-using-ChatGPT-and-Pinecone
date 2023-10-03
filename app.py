@@ -62,6 +62,20 @@ def retrieval_answer(query):
     
     return result
 
+def hide_github_badge():
+    st.markdown(
+        """
+        <style>
+        .element-container:nth-child(5) .stButton > div {
+            display: none;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# Call the function in the main part of your app.
+hide_github_badge()
 
 def main():
     st.title("Question & Answer Retrieval from PDFs")
