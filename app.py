@@ -74,15 +74,18 @@ def hide_streamlit_elements():
         unsafe_allow_html=True,
     )
 
-# Add custom CSS to hide the entire Streamlit menu
-hide_menu = """
-#MainMenu {
-  visibility: hidden;
-}
-"""
-st.markdown(hide_menu, unsafe_allow_html=True)
-
-
+st.markdown(
+    """
+    <style>
+    .css-1jc7ptx, .e1ewe7hr3, .viewerBadge_container__1QSob,
+    .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 # Call the function in the main part of your app.
 hide_streamlit_elements()
 
