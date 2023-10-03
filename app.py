@@ -74,22 +74,6 @@ def hide_streamlit_elements():
         unsafe_allow_html=True,
     )
 
-hide_elements = """
-.css-1jc7ptx, .e1ewe7hr3, .viewerBadge_container__1QSob, .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137, .viewerBadge_text__1JaDK{ 
-    display: none; 
-}
-#MainMenu{
-    visibility: hidden;
-}
-footer { 
-    visibility: hidden;
-}
-header { 
-    visibility: hidden;
-}
-"""
-st.markdown(hide_elements, unsafe_allow_html=True)
-
 # Call the function in the main part of your app.
 hide_streamlit_elements()
 
