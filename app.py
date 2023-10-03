@@ -70,6 +70,8 @@ def hide_streamlit_elements():
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         footer .btn {visibility: hidden;} 
+        #root > div:nth-child(1) > div > div > a {display: none;}
+        #root > div:nth-child(1) > div.withScreencast > div > div > header > div.st-emotion-cache-zq5wmm.ezrtsby0 {display: none;}
         </style>
         """,
         unsafe_allow_html=True,
