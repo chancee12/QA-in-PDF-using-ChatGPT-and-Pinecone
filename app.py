@@ -62,20 +62,24 @@ def retrieval_answer(query):
     
     return result
 
-def hide_github_badge():
+def hide_streamlit_elements():
     st.markdown(
         """
         <style>
-        .element-container:nth-child(5) .stButton > div {
-            display: none;
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        svg[aria-label="github"] {
+            display: none !important;
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
+
 # Call the function in the main part of your app.
-hide_github_badge()
+hide_streamlit_elements()
+
 
 def main():
     st.title("Question & Answer Retrieval from PDFs")
