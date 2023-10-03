@@ -62,6 +62,7 @@ def retrieval_answer(query):
     
     return result
 
+
 def hide_streamlit_elements():
     st.markdown(
         """
@@ -73,10 +74,6 @@ def hide_streamlit_elements():
         """,
         unsafe_allow_html=True,
     )
-
-# Call the function in the main part of your app.
-hide_streamlit_elements()
-
 
 def main():
     st.title("Question & Answer Retrieval from PDFs")
@@ -110,6 +107,8 @@ def main():
     This tool is optimized for extracting budgetary and organizational details from the provided documents. 
     For best results, try to be as specific as possible in your queries. If you have any feedback or require further assistance, please [contact us](mailto:Chancee.Vincent@aximgeo.com).
     """)
+
+hide_streamlit_elements()
 
 if __name__ == "__main__":
     main()
