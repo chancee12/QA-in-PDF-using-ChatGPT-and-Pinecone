@@ -35,12 +35,7 @@ llm = ChatOpenAI()
 doc_db = embedding_db()
 
 def retrieval_answer(query):
-    primed_query = (f"Provide a comprehensive breakdown related to '{query}'. "
-                    f"The user is often seeking details on budgets, pricing, or costs. "
-                    f"For budget-related inquiries, an ideal response would include figures for multiple fiscal years, "
-                    f"like FY 2022, FY 2023, etc. Always present nearby mentioned budgets, pricing, or costs relevant to the query. "
-                    f"Disclaimer: The provided answers are based on available information and may have variations. "
-                    f"For terms with multiple definitions, provide all relevant explanations.")
+    primed_query = (f"Provide a comprehensive breakdown related to '{query}'.")
     
     qa = RetrievalQA.from_chain_type(
         llm=llm, 
@@ -49,6 +44,22 @@ def retrieval_answer(query):
     )
     
     result = qa.run(primed_query)
+    
+    # Budget and related terminologies
+    budget_terms = ['budget', 'price', 'cost', 'funding', 'expense', 'financing', 'appropriation', 'enactment', 'supplemental', 'request']
+    fiscal_years = ['FY 2022', 'FY 2023', 'FY 2024']
+    
+    # Checking if the query has any budget-related term or FY reference
+    if any(term in query.lower() for term in budget_terms) or any(year in query for year in fiscal_years):
+        # If specific FY info isn't mentioned in the result
+        if not any(year in result for year in fiscal_years):
+            result += (" Unfortunately, the system couldn't identify specific budget figures or relevant fiscal year details in the provided context.")
+    else:
+        # Trimming the budget part if it's not relevant to the query, while keeping other relevant details.
+        result = result.split("Regarding budget information,")[0]
+    
+    result += " Please note that the provided answers are based on available documents and may not capture the full context or details."
+    
     return result
 
 
@@ -61,19 +72,23 @@ def main():
     - [Document 3](https://usg02.safelinks.protection.office365.us/?url=https%3A%2F%2Fcomptroller.defense.gov%2FPortals%2F45%2FDocuments%2Fdefbudget%2Ffy2024%2Fbudget_justification%2Fpdfs%2F01_Operation_and_Maintenance%2FO_M_VOL_1_PART_1%2FOM_Volume1_Part1.pdf&data=05%7C01%7C%7C3d94d8a8f971462e334308dbb5638175%7Cb95a24d4bf23485495ba52535e36a689%7C0%7C0%7C638303211215324281%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=vUsbSXaLsmtZUHRAiGsgHTC9IixSxPfegNeb3gtUSL8%3D&reserved=0)
 
     **Example Queries**:
-    - What department or organization is DTRA about?
-    - Tell me about the DoD teleport program and the budgets involved.
+    - What is DTRA?
+    - Tell me about the DoD teleport program.
     - What is the budget activity 02: National Guard equipment listed as?
+    - What is the Silent Knight Radar (SKR) Program?
     """)
 
     text_input = st.text_area("Type your query:", height=150)  # Using text_area for better visibility and space
     if st.button("Retrieve Information"):
-        if len(text_input) > 0:
-            st.subheader("Your Query:")
-            st.write(text_input)
-            st.subheader("Answer:")
-            answer = retrieval_answer(text_input)
-            st.write(answer)
+            if len(text_input) > 0:
+                st.subheader("Your Query:")
+                st.write(text_input)
+                st.subheader("Answer:")
+                
+                with st.spinner('Sifting through the information now...'):
+                    answer = retrieval_answer(text_input)
+                
+                st.write(answer)
 
     st.write("""
     #### Note:
