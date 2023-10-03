@@ -41,8 +41,16 @@ def retrieval_answer(query):
                     f"like FY 2022, FY 2023, etc. Always present nearby mentioned budgets, pricing, or costs relevant to the query. "
                     f"Disclaimer: The provided answers are based on available information and may have variations. "
                     f"For terms with multiple definitions, provide all relevant explanations.")
-    result = llm.run(primed_query)  # Assuming llm.run is equivalent to your original_retrieval_function
+    
+    qa = RetrievalQA.from_chain_type(
+        llm=llm, 
+        chain_type='stuff',
+        retriever=doc_db.as_retriever(),
+    )
+    
+    result = qa.run(primed_query)
     return result
+
 
 def main():
     st.title("Question & Answer Retrieval from PDFs")
@@ -54,8 +62,8 @@ def main():
 
     **Example Queries**:
     - What department or organization is DTRA about?
-    - Tell me about the DoD teleport program and the budgets involved
-    ... (add more examples)
+    - Tell me about the DoD teleport program and the budgets involved.
+    - What is the budget activity 02: National Guard equipment listed as?
     """)
 
     text_input = st.text_area("Type your query:", height=150)  # Using text_area for better visibility and space
