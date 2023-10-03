@@ -62,17 +62,6 @@ def retrieval_answer(query):
     
     return result
 
-def hide_streamlit_elements():
-    st.markdown(
-        """
-        <style>
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        footer .btn {visibility: hidden;} 
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
 st.markdown(
     """
@@ -86,8 +75,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-# Call the function in the main part of your app.
-hide_streamlit_elements()
 
 
 def main():
