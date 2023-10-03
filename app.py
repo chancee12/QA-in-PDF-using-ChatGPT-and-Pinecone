@@ -68,13 +68,12 @@ def hide_streamlit_elements():
         <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
-        svg[aria-label="github"] {
-            display: none !important;
-        }
+        footer .btn {visibility: hidden;} 
         </style>
         """,
         unsafe_allow_html=True,
     )
+
 
 
 # Call the function in the main part of your app.
