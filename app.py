@@ -86,7 +86,7 @@ def main():
     - [Document 3](https://usg02.safelinks.protection.office365.us/?url=https%3A%2F%2Fcomptroller.defense.gov%2FPortals%2F45%2FDocuments%2Fdefbudget%2Ffy2024%2Fbudget_justification%2Fpdfs%2F01_Operation_and_Maintenance%2FO_M_VOL_1_PART_1%2FOM_Volume1_Part1.pdf&data=05%7C01%7C%7C3d94d8a8f971462e334308dbb5638175%7Cb95a24d4bf23485495ba52535e36a689%7C0%7C0%7C638303211215324281%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=vUsbSXaLsmtZUHRAiGsgHTC9IixSxPfegNeb3gtUSL8%3D&reserved=0)
 
     **Example Queries**:
-    - What is DTRA?
+    - What are the specific changes in the Department of Defense Operation and Maintenance, Defense-Wide funding request between FY 2023 and FY 2024, including the dollar amounts?
     - Tell me about the DoD teleport program.
     - What is the budget activity 02: National Guard equipment listed as?
     - What is the Silent Knight Radar (SKR) Program?
