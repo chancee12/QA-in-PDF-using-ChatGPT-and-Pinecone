@@ -44,11 +44,7 @@ def retrieval_answer(query):
         retriever=doc_db.as_retriever(),
     )
 
-    result, metadata = qa.run(primed_query)  # assuming the run method returns both result and metadata
-
-    # Extracting source document and position from metadata
-    source_document = metadata.get('document_name', 'Unknown Document')
-    position = metadata.get('position', 'Unknown Position')
+    result = qa.run(primed_query)[0]  # assuming result is the first value returned
 
     # Budget and related terminologies
     budget_terms = ['budget', 'price', 'cost', 'funding', 'expense', 'financing', 'appropriation', 'enactment', 'supplemental', 'request']
@@ -72,10 +68,10 @@ def retrieval_answer(query):
     if len(result) < 50:
         result = "Sorry, I couldn't find relevant information based on your query."
 
-    result += f"\n\nSource: {source_document} (Position: {position})"
     result += "\nPlease note that answers are derived from available documents and might not capture the entire context."
     
     return result
+
 
 
 
