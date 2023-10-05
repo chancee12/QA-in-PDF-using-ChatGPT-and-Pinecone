@@ -35,32 +35,48 @@ llm = ChatOpenAI()
 doc_db = embedding_db()
 
 def retrieval_answer(query):
-    primed_query = (f"Provide a comprehensive breakdown related to '{query}'.")
-    
+    # Priming the query more specifically
+    primed_query = f"Details related to '{query}' in the budget documents."
+
     qa = RetrievalQA.from_chain_type(
         llm=llm, 
         chain_type='stuff',
         retriever=doc_db.as_retriever(),
     )
-    
-    result = qa.run(primed_query)
-    
+
+    result, metadata = qa.run(primed_query)  # assuming the run method returns both result and metadata
+
+    # Extracting source document and position from metadata
+    source_document = metadata.get('document_name', 'Unknown Document')
+    position = metadata.get('position', 'Unknown Position')
+
     # Budget and related terminologies
     budget_terms = ['budget', 'price', 'cost', 'funding', 'expense', 'financing', 'appropriation', 'enactment', 'supplemental', 'request']
-    fiscal_years = ['FY 2022', 'FY 2023', 'FY 2024']
-    
-    # Checking if the query has any budget-related term or FY reference
-    if any(term in query.lower() for term in budget_terms) or any(year in query for year in fiscal_years):
-        # If specific FY info isn't mentioned in the result
-        if not any(year in result for year in fiscal_years):
-            result += (" Unfortunately, the system couldn't identify specific budget figures or relevant fiscal year details in the provided context.")
+    fiscal_years_long = ['PRIOR', 'FY 2022', 'FY 2023', 'FY 2024', 'FY 2025', 'FY 2026', 'FY 2027', 'FY 2028']
+    fiscal_years_short = ['PRIOR', 'FY-22', 'FY-23', 'FY-24', 'FY-25', 'FY-26', 'FY-27', 'FY-28']
+
+    # Check for fiscal years in query and result
+    has_fy_long = any(year in query for year in fiscal_years_long) or any(year in result for year in fiscal_years_long)
+    has_fy_short = any(year in query for year in fiscal_years_short) or any(year in result for year in fiscal_years_short)
+
+    # Check if query has budget-related terms or FY reference and if result has FY info
+    if any(term in query.lower() for term in budget_terms) or has_fy_long or has_fy_short:
+        if not (has_fy_long or has_fy_short):
+            result += " The specific budget figures or fiscal year details were not identified."
     else:
-        # Trimming the budget part if it's not relevant to the query, while keeping other relevant details.
-        result = result.split("Regarding budget information,")[0]
-    
-    result += " Please note that the provided answers are based on available documents and may not capture the full context or details."
+        # Trimming the budget part if it's not relevant to the query
+        if "Regarding budget information," in result:
+            result = result.split("Regarding budget information,")[0]
+
+    # Feedback for user when no relevant information is found
+    if len(result) < 50:
+        result = "Sorry, I couldn't find relevant information based on your query."
+
+    result += f"\n\nSource: {source_document} (Position: {position})"
+    result += "\nPlease note that answers are derived from available documents and might not capture the entire context."
     
     return result
+
 
 
 def hide_streamlit_elements():
@@ -81,11 +97,26 @@ def main():
     st.title("Question & Answer Retrieval from PDFs")
     st.write("""
     This tool was developed by Chancee Vincent to assist in information retrieval from the following documents:
-    - [Document 1](https://usg02.safelinks.protection.office365.us/?url=https%3A%2F%2Fcomptroller.defense.gov%2FPortals%2F45%2FDocuments%2Fdefbudget%2Ffy2024%2Fbudget_justification%2Fpdfs%2F03_RDT_and_E%2FOSD_PB2024.pdf&data=05%7C01%7C%7C3d94d8a8f971462e334308dbb5638175%7Cb95a24d4bf23485495ba52535e36a689%7C0%7C0%7C638303211215324281%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=cFDapCuJLsTORH6PeEOvDWdIAn%2FS1af%2BsGvWaXr0kYo%3D&reserved=0)
-    - [Document 2](https://usg02.safelinks.protection.office365.us/?url=https%3A%2F%2Fcomptroller.defense.gov%2FPortals%2F45%2FDocuments%2Fdefbudget%2Ffy2024%2Fbudget_justification%2Fpdfs%2F02_Procurement%2FPB_2024_PDW_VOL_1.pdf&data=05%7C01%7C%7C3d94d8a8f971462e334308dbb5638175%7Cb95a24d4bf23485495ba52535e36a689%7C0%7C0%7C638303211215324281%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=LGbIX5KANyz%2FYUX5Hq9PDekrvEsh6oKzevLG6yCPjSc%3D&reserved=0)
-    - [Document 3](https://usg02.safelinks.protection.office365.us/?url=https%3A%2F%2Fcomptroller.defense.gov%2FPortals%2F45%2FDocuments%2Fdefbudget%2Ffy2024%2Fbudget_justification%2Fpdfs%2F01_Operation_and_Maintenance%2FO_M_VOL_1_PART_1%2FOM_Volume1_Part1.pdf&data=05%7C01%7C%7C3d94d8a8f971462e334308dbb5638175%7Cb95a24d4bf23485495ba52535e36a689%7C0%7C0%7C638303211215324281%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=vUsbSXaLsmtZUHRAiGsgHTC9IixSxPfegNeb3gtUSL8%3D&reserved=0)
-
+    - [DoD RDT&E Budget Justification](https://comptroller.defense.gov/Portals/45/Documents/defbudget/fy2024/budget_justification/pdfs/03_RDT_and_E/OSD_PB2024.pdf)
+    - [DoD Procurement Budget Justification](https://comptroller.defense.gov/Portals/45/Documents/defbudget/fy2024/budget_justification/pdfs/02_Procurement/PB_2024_PDW_VOL_1.pdf)
+    - [DoD Operation and Maintenance Justification](https://comptroller.defense.gov/Portals/45/Documents/defbudget/fy2024/budget_justification/pdfs/01_Operation_and_Maintenance/O_M_VOL_1_PART_1/OM_Volume1_Part1.pdf)
+    - [Air Force Aircraft Procurement Vol I](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Aircraft%20Procurement%20Vol%20I.pdf)
+    - [Air Force Aircraft Procurement Vol II Mods](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Aircraft%20Procurement%20Vol%20II%20Mods.pdf)
+    - [Air Force Ammunition Procurement](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Ammunition%20Procurement.pdf)
+    - [Air Force Missile Procurement](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Missile%20Procurement.pdf)
+    - [Air Force Other Procurement](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Other%20Procurement.pdf)
+    - [Space Force Procurement](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Space%20Force%20Procurement.pdf)
+    - [Air Force RDT&E Vol I](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Air%20Force%20Research%20and%20Development%20Test%20and%20Evaluation%20Vol%20I.pdf)
+    - [Air Force RDT&E Vol II](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Air%20Force%20Research%20and%20Development%20Test%20and%20Evaluation%20Vol%20II.pdf)
+    - [Air Force RDT&E Vol IIIa](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Air%20Force%20Research%20and%20Development%20Test%20and%20Evaluation%20Vol%20IIIa.pdf)
+    - [Air Force RDT&E Vol IIIb](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Air%20Force%20Research%20and%20Development%20Test%20and%20Evaluation%20Vol%20IIIb.pdf)
+    - [Space Force RDT&E](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Space%20Force%20Research%20and%20Development%20Test%20and%20Evaluation.pdf)
+      
     **Example Queries**:
+    - What is the budget allocation for the FAB-T Force Element Terminal for FY 2024?
+    - Describe the Joint Hypersonic Transition Office's mission.
+    - Provide a summary of the Aircraft Integration Technologies initiative.
+    - How has the budget changed for the Missile Replacement Eq-Ballistic program from FY 2023 to FY 2024?
     - What are the specific changes in the Department of Defense Operation and Maintenance, Defense-Wide funding request between FY 2023 and FY 2024, including the dollar amounts?
     - Tell me about the DoD teleport program.
     - What is the budget activity 02: National Guard equipment listed as?
