@@ -35,23 +35,13 @@ llm = ChatOpenAI()
 doc_db = embedding_db()
 
 def retrieval_answer(query):
-
-    # Initialize the QA retriever
     qa = RetrievalQA.from_chain_type(
-        llm=llm, 
-        chain_type='stuff',
-        retriever=doc_db.as_retriever(),
+    llm=llm, 
+    chain_type='stuff',
+    retriever=doc_db.as_retriever(),
     )
-
-    # Run the query
-    result = qa.run(query)[0]  # assuming result is the first value returned
-
-    # Feedback for user when no relevant information is found
-    if len(result) < 50:
-        result = "Sorry, I couldn't find relevant information based on your query."
-
-    result += "\nPlease note that answers are derived from available documents and might not capture the entire context."
-    
+    query = query
+    result = qa.run(query)
     return result
 
 
