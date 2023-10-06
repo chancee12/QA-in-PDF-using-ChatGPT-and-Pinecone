@@ -163,7 +163,7 @@ def main():
 
     st.write("""
     #### Note:
-    - This tool is optimized for extracting textual details from the provided documents. However, many of the tables are unstructured images and may not be contextually understood.
+    - This tool is optimized for extracting textual details from the provided documents. However, many of the tables are unstructured images and may not be contextually understood or extracted.
     - For best results, try to be as specific as possible in your queries. If you have any feedback or require further assistance, please [contact](mailto:Chancee.Vincent@aximgeo.com).
     """)
 
