@@ -16,19 +16,51 @@ PINECONE_ENV = os.getenv('PINECONE_ENV')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 
-def doc_preprocessing():
-    loader = DirectoryLoader('data/', glob='**/*.pdf', show_progress=True)
-    docs = loader.load()
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    docs_split = text_splitter.split_documents(docs)
-    return docs_split
+def retrieval_answer(query):
+    # Priming the query more specifically
+    primed_query = f"Details related to '{query}' in the budget documents."
+
+    qa = RetrievalQA.from_chain_type(
+        llm=llm, 
+        chain_type='stuff',
+        retriever=doc_db.as_retriever(),
+    )
+
+    result = qa.run(primed_query)[0]  # assuming result is the first value returned
+
+    # Budget and related terminologies
+    budget_terms = ['budget', 'price', 'cost', 'funding', 'expense', 'financing', 'appropriation', 'enactment', 'supplemental', 'request']
+    fiscal_years_long = ['PRIOR', 'FY 2022', 'FY 2023', 'FY 2024', 'FY 2025', 'FY 2026', 'FY 2027', 'FY 2028']
+    fiscal_years_short = ['PRIOR', 'FY-22', 'FY-23', 'FY-24', 'FY-25', 'FY-26', 'FY-27', 'FY-28']
+
+    # Check for fiscal years in query and result
+    has_fy_long = any(year in query for year in fiscal_years_long) or any(year in result for year in fiscal_years_long)
+    has_fy_short = any(year in query for year in fiscal_years_short) or any(year in result for year in fiscal_years_short)
+
+    # Check if query has budget-related terms or FY reference and if result has FY info
+    if any(term in query.lower() for term in budget_terms) or has_fy_long or has_fy_short:
+        if not (has_fy_long or has_fy_short):
+            result += " The specific budget figures or fiscal year details were not identified."
+    else:
+        # Trimming the budget part if it's not relevant to the query
+        if "Regarding budget information," in result:
+            result = result.split("Regarding budget information,")[0]
+
+    # Feedback for user when no relevant information is found
+    if len(result) < 50:
+        result = "Sorry, I couldn't find relevant information based on your query."
+
+    result += "\nPlease note that answers are derived from available documents and might not capture the entire context."
+    
+    return result
+
 
 @st.cache_resource
 def embedding_db():
     embeddings = OpenAIEmbeddings()
     pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
     docs_split = doc_preprocessing()
-    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod')
+    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod2')
     return doc_db
 
 llm = ChatOpenAI()
