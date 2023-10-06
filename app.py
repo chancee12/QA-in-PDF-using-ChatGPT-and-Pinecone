@@ -16,6 +16,24 @@ PINECONE_ENV = os.getenv('PINECONE_ENV')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 
+def doc_preprocessing():
+    loader = DirectoryLoader('data/', glob='**/*.pdf', show_progress=True)
+    docs = loader.load()
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    docs_split = text_splitter.split_documents(docs)
+    return docs_split
+
+@st.cache_resource
+def embedding_db():
+    embeddings = OpenAIEmbeddings()
+    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
+    docs_split = doc_preprocessing()
+    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod2')
+    return doc_db
+
+llm = ChatOpenAI()
+doc_db = embedding_db()
+
 def retrieval_answer(query):
     # Priming the query more specifically
     primed_query = f"Details related to '{query}' in the budget documents."
@@ -54,27 +72,6 @@ def retrieval_answer(query):
     
     return result
 
-
-@st.cache_resource
-def embedding_db():
-    embeddings = OpenAIEmbeddings()
-    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
-    docs_split = doc_preprocessing()
-    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod2')
-    return doc_db
-
-llm = ChatOpenAI()
-doc_db = embedding_db()
-
-def retrieval_answer(query):
-    qa = RetrievalQA.from_chain_type(
-    llm=llm, 
-    chain_type='stuff',
-    retriever=doc_db.as_retriever(),
-    )
-    query = query
-    result = qa.run(query)
-    return result
 
 
 def hide_streamlit_elements():
