@@ -77,8 +77,8 @@ def hide_streamlit_elements():
     )
 
 def main():
-    st.title("Question & Answer Retrieval from PDFs")
-    st.write("This tool was developed by Chancee Vincent to assist in information retrieval from the following documents:")
+    st.title("Question & Answer Retrieval")
+    st.write("This tool was developed to assist in information retrieval from the following documents:")
 
     with st.expander("PDF Links"):
         st.write("""
