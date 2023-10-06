@@ -28,7 +28,7 @@ def embedding_db():
     embeddings = OpenAIEmbeddings()
     pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
     docs_split = doc_preprocessing()
-    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod2')
+    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod3')
     return doc_db
 
 llm = ChatOpenAI()
@@ -115,7 +115,7 @@ def main():
         - [RDTEN BA4 Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA4_Book.pdf)
         - [RDTEN BA5 Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA5_Book.pdf)
         - [RDTEN BA6 Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA6_Book.pdf)
-        - [RDTEN BA7-8 Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA7-8_Book.pdf)
+        - [RDTEN BA7-8 Book was not included due to size](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA7-8_Book.pdf)
         ### Army Links
         - [Aircraft Procurement Army](https://www.asafm.army.mil/Portals/72/Documents/BudgetMaterial/2024/Base%20Budget/Procurement/Aircraft%20Procurement%20Army.pdf)
         - [Missile Procurement Army](https://www.asafm.army.mil/Portals/72/Documents/BudgetMaterial/2024/Base%20Budget/Procurement/Missile%20Procurement%20Army.pdf)
@@ -165,7 +165,7 @@ def main():
 
     st.write("""
     #### Note:
-    This tool is optimized for extracting textual details from the provided documents. 
+    This tool is optimized for extracting textual details from the provided documents. However, many of the tables are unstructured images and may not be contextually understood.
     For best results, try to be as specific as possible in your queries. If you have any feedback or require further assistance, please [contact us](mailto:Chancee.Vincent@aximgeo.com).
     """)
 
