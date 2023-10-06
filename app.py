@@ -35,44 +35,32 @@ llm = ChatOpenAI()
 doc_db = embedding_db()
 
 def retrieval_answer(query):
-    # Priming the query more specifically
-    primed_query = f"Details related to '{query}' in the budget documents."
-
+    primed_query = (f"Provide a comprehensive breakdown related to '{query}'.")
+    
     qa = RetrievalQA.from_chain_type(
         llm=llm, 
         chain_type='stuff',
         retriever=doc_db.as_retriever(),
     )
-
-    result = qa.run(primed_query)[0]  # assuming result is the first value returned
-
+    
+    result = qa.run(primed_query)
     # Budget and related terminologies
     budget_terms = ['budget', 'price', 'cost', 'funding', 'expense', 'financing', 'appropriation', 'enactment', 'supplemental', 'request']
-    fiscal_years_long = ['PRIOR', 'FY 2022', 'FY 2023', 'FY 2024', 'FY 2025', 'FY 2026', 'FY 2027', 'FY 2028']
-    fiscal_years_short = ['PRIOR', 'FY-22', 'FY-23', 'FY-24', 'FY-25', 'FY-26', 'FY-27', 'FY-28']
-
-    # Check for fiscal years in query and result
-    has_fy_long = any(year in query for year in fiscal_years_long) or any(year in result for year in fiscal_years_long)
-    has_fy_short = any(year in query for year in fiscal_years_short) or any(year in result for year in fiscal_years_short)
-
-    # Check if query has budget-related terms or FY reference and if result has FY info
-    if any(term in query.lower() for term in budget_terms) or has_fy_long or has_fy_short:
-        if not (has_fy_long or has_fy_short):
-            result += " The specific budget figures or fiscal year details were not identified."
+    fiscal_years = ['PRIOR', 'FY 2022', 'FY 2023', 'FY 2024', 'FY 2025', 'FY 2026', 'FY 2027', 'FY 2028', 'FY-22', 'FY-23', 'FY-24', 'FY-25', 'FY-26', 'FY-27', 'FY-28']
+    
+    # Checking if the query has any budget-related term or FY reference
+    if any(term in query.lower() for term in budget_terms) or any(year in query for year in fiscal_years):
+        # If specific FY info isn't mentioned in the result
+        if not any(year in result for year in fiscal_years):
+            result += (" Unfortunately, the system couldn't identify specific budget figures or relevant fiscal year details in the provided context.")
     else:
-        # Trimming the budget part if it's not relevant to the query
-        if "Regarding budget information," in result:
-            result = result.split("Regarding budget information,")[0]
-
-    # Feedback for user when no relevant information is found
-    if len(result) < 50:
-        result = "Sorry, I couldn't find relevant information based on your query."
-
-    result += "\nPlease note that answers are derived from available documents and might not capture the entire context."
+        # Trimming the budget part if it's not relevant to the query, while keeping other relevant details.
+        result = result.split("Regarding budget information,")[0]
+    
+    result += " Please note that the provided answers are based on available documents and may not capture the full context or details."
     
     return result
-
-
+    
 
 def hide_streamlit_elements():
     st.markdown(
@@ -132,7 +120,7 @@ def main():
 
     st.write("""
     #### Note:
-    This tool is optimized for extracting budgetary and organizational details from the provided documents. 
+    This tool is optimized for extracting textual details from the provided documents. 
     For best results, try to be as specific as possible in your queries. If you have any feedback or require further assistance, please [contact us](mailto:Chancee.Vincent@aximgeo.com).
     """)
 
