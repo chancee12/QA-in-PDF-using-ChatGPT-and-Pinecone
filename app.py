@@ -80,7 +80,7 @@ def main():
     st.title("Question & Answer Retrieval from PDFs")
     st.write("This tool was developed by Chancee Vincent to assist in information retrieval from the following documents:")
 
-    with st.beta_expander("PDF Links"):
+    with st.expander("PDF Links"):
         st.write("""
         DoD Links
         - [DoD RDT&E Budget Justification](https://comptroller.defense.gov/Portals/45/Documents/defbudget/fy2024/budget_justification/pdfs/03_RDT_and_E/OSD_PB2024.pdf)
