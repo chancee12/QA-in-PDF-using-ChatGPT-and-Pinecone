@@ -146,8 +146,6 @@ def main():
     - How has the budget changed for the Missile Replacement Eq-Ballistic program from FY 2023 to FY 2024?
     - What are the specific changes in the Department of Defense Operation and Maintenance, Defense-Wide funding request between FY 2023 and FY 2024, including the dollar amounts?
     - Tell me about the DoD teleport program.
-    - What is the budget activity 02: National Guard equipment listed as?
-    - What is the Silent Knight Radar (SKR) Program?
     """)
 
 
@@ -165,8 +163,8 @@ def main():
 
     st.write("""
     #### Note:
-    This tool is optimized for extracting textual details from the provided documents. However, many of the tables are unstructured images and may not be contextually understood.
-    For best results, try to be as specific as possible in your queries. If you have any feedback or require further assistance, please [contact us](mailto:Chancee.Vincent@aximgeo.com).
+    - This tool is optimized for extracting textual details from the provided documents. However, many of the tables are unstructured images and may not be contextually understood.
+    - For best results, try to be as specific as possible in your queries. If you have any feedback or require further assistance, please [contact](mailto:Chancee.Vincent@aximgeo.com).
     """)
 
 hide_streamlit_elements()
