@@ -80,14 +80,13 @@ def main():
     st.title("Question & Answer Retrieval from PDFs")
     st.write("This tool was developed by Chancee Vincent to assist in information retrieval from the following documents:")
 
-    with st.beta_expander("DoD"):
+    with st.beta_expander("PDF Links"):
         st.write("""
+        DoD Links
         - [DoD RDT&E Budget Justification](https://comptroller.defense.gov/Portals/45/Documents/defbudget/fy2024/budget_justification/pdfs/03_RDT_and_E/OSD_PB2024.pdf)
         - [DoD Procurement Budget Justification](https://comptroller.defense.gov/Portals/45/Documents/defbudget/fy2024/budget_justification/pdfs/02_Procurement/PB_2024_PDW_VOL_1.pdf)
         - [DoD Operation and Maintenance Justification](https://comptroller.defense.gov/Portals/45/Documents/defbudget/fy2024/budget_justification/pdfs/01_Operation_and_Maintenance/O_M_VOL_1_PART_1/OM_Volume1_Part1.pdf)
-        """)
-    with st.beta_expander("Air & Space Force"):
-        st.write("""
+        Air & Space Force Links
         - [Air Force Aircraft Procurement Vol I](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Aircraft%20Procurement%20Vol%20I.pdf)
         - [Air Force Aircraft Procurement Vol II Mods](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Aircraft%20Procurement%20Vol%20II%20Mods.pdf)
         - [Air Force Ammunition Procurement](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Procurement/FY24%20Air%20Force%20Ammunition%20Procurement.pdf)
@@ -99,9 +98,7 @@ def main():
         - [Air Force RDT&E Vol IIIa](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Air%20Force%20Research%20and%20Development%20Test%20and%20Evaluation%20Vol%20IIIa.pdf)
         - [Air Force RDT&E Vol IIIb](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Air%20Force%20Research%20and%20Development%20Test%20and%20Evaluation%20Vol%20IIIb.pdf)
         - [Space Force RDT&E](https://www.saffm.hq.af.mil/Portals/84/documents/FY24/Research%20and%20Development%20Test%20and%20Evaluation/FY24%20Space%20Force%20Research%20and%20Development%20Test%20and%20Evaluation.pdf)
-         """) 
-    with st.expander("Navy"):
-        st.write("""
+        Navy Links
         - [PMC Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/PMC_Book.pdf)
         - [SCN Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/SCN_Book.pdf)
         - [WPN Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/WPN_Book.pdf)
@@ -119,9 +116,7 @@ def main():
         - [RDTEN BA5 Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA5_Book.pdf)
         - [RDTEN BA6 Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA6_Book.pdf)
         - [RDTEN BA7-8 Book](https://www.secnav.navy.mil/fmc/fmb/Documents/24pres/RDTEN_BA7-8_Book.pdf)
-        """)   
-    with st.expander("Army"):
-        st.write("""
+        Army Links
         - [Aircraft Procurement Army](https://www.asafm.army.mil/Portals/72/Documents/BudgetMaterial/2024/Base%20Budget/Procurement/Aircraft%20Procurement%20Army.pdf)
         - [Missile Procurement Army](https://www.asafm.army.mil/Portals/72/Documents/BudgetMaterial/2024/Base%20Budget/Procurement/Missile%20Procurement%20Army.pdf)
         - [Procurement of Weapons and Tracked Combat Vehicles](https://www.asafm.army.mil/Portals/72/Documents/BudgetMaterial/2024/Base%20Budget/Procurement/Procurement%20of%20Weapons%20and%20Tracked%20Combat%20Vehicles.pdf)
