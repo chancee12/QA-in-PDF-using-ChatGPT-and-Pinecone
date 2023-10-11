@@ -28,7 +28,7 @@ def embedding_db():
     embeddings = OpenAIEmbeddings()
     pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
     docs_split = doc_preprocessing()
-    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod3')
+    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod4')
     return doc_db
 
 llm = ChatOpenAI()
