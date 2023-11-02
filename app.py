@@ -34,8 +34,6 @@ def embedding_db():
     # Connect to an existing Pinecone index
     if index_name in existing_indexes:
         doc_db = pinecone.Index(index_name)
-        print(f"Connected to Pinecone index: {index_name}")  # Debug print
-        return doc_db  # Make sure to return the Pinecone index object
     else:
         raise Exception(f"The index {index_name} does not exist in Pinecone.")
 
@@ -43,11 +41,6 @@ llm = ChatOpenAI()
 doc_db = embedding_db()
 
 def retrieval_answer(query):
-    if doc_db is None:
-        raise ValueError("doc_db is None. Pinecone index was not initialized properly.")
-
-    # Continue with the rest of the function...
-
     primed_query = (f"Provide a comprehensive breakdown related to '{query}'.")
     
     qa = RetrievalQA.from_chain_type(
