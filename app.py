@@ -28,14 +28,18 @@ def embedding_db():
     embeddings = OpenAIEmbeddings()
     pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
     
-    index_name = 'dod4'  # Make sure this is the correct index name as created in Pinecone dashboard
+    index_name = 'dod4'
     existing_indexes = pinecone.list_indexes()
 
-    # Connect to an existing Pinecone index
-    if index_name in existing_indexes:
-        doc_db = pinecone.Index(index_name)
-    else:
-        raise Exception(f"The index {index_name} does not exist in Pinecone.")
+    # Initialize Pinecone VectorStore
+    doc_db = Pinecone(index_name=index_name)
+
+    # Check if the Pinecone index 'dod4' already has vectors to avoid duplications
+    if index_name not in existing_indexes:
+        docs_split = doc_preprocessing()  # Ensure this function is defined somewhere in your code
+        doc_db.upsert(vectors=embeddings.embed_and_make_records(docs_split))  # Embed documents and add to Pinecone
+    
+    return doc_db
 
 llm = ChatOpenAI()
 doc_db = embedding_db()
