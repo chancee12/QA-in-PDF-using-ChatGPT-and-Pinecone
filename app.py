@@ -16,30 +16,6 @@ PINECONE_ENV = os.getenv('PINECONE_ENV')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 
-# This function should only be called once to avoid redundant index initialization and document upload.
-def init_embedding_db():
-    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
-    embeddings = OpenAIEmbeddings()
-    docs_split = doc_preprocessing()
-
-    # Initialize or retrieve Pinecone index
-    doc_db = Pinecone(index_name='dod4')
-    if 'dod4' not in pinecone.list_indexes():
-        doc_db.create_index(vector_size=embeddings.vector_length, metric='cosine')
-
-    # Get all ids (upsert keys) already in the index
-    existing_ids = doc_db.get_all_ids()
-
-    # Filter out documents that are already in the index
-    docs_to_add = [doc for doc in docs_split if doc['id'] not in existing_ids]
-
-    # If there are new documents to add, update the index
-    if docs_to_add:
-        doc_db.upsert(documents=docs_to_add)
-
-    return doc_db
-
-doc_db = init_embedding_db()
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def embedding_db():
     # Initialize Pinecone only once
