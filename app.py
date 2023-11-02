@@ -16,56 +16,19 @@ PINECONE_ENV = os.getenv('PINECONE_ENV')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 
-@st.cache(allow_output_mutation=True, show_spinner=False)
-def embedding_db():
-    # Initialize Pinecone only once
-    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
-    # Initialize embeddings outside of the index existence check to avoid re-initializing
-    embeddings = OpenAIEmbeddings()
-
-    # Check if the Pinecone index 'dod4' already exists
-    existing_indexes = pinecone.list_indexes()
-    if 'dod4' in existing_indexes:
-        # If the index exists, use the existing index
-        doc_db = Pinecone(index_name='dod4')
-    else:
-        # If the index doesn't exist, preprocess the documents and create the index
-        docs_split = doc_preprocessing()
-        doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod4')
-
-    # This part is important to avoid re-uploading documents that are already in the index.
-    # Get all ids (upsert keys) already in the index
-    existing_ids = doc_db.get_all_ids()
-    
-    # Preprocess documents if not done already
-    if 'docs_split' not in locals():
-        docs_split = doc_preprocessing()
-    
-    # Filter out documents that are already in the index
-    docs_to_add = [doc for doc in docs_split if doc['id'] not in existing_ids]
-
-    # If there are new documents to add, update the index
-    if docs_to_add:
-        doc_db.upsert(documents=docs_to_add)
-
-    return doc_db
-
+def doc_preprocessing():
+    loader = DirectoryLoader('data/', glob='**/*.pdf', show_progress=True)
+    docs = loader.load()
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    docs_split = text_splitter.split_documents(docs)
+    return docs_split
 
 @st.cache_resource
 def embedding_db():
     embeddings = OpenAIEmbeddings()
     pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
     docs_split = doc_preprocessing()
-
-    # Check if Pinecone index 'dod4' already exists
-    existing_indexes = pinecone.list_indexes()
-    if 'dod4' in existing_indexes:
-        # If index already exists, simply initialize Pinecone with the existing index
-        doc_db = Pinecone(index_name='dod4')
-    else:
-        # If index doesn't exist, create it and add vectors
-        doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod4')
-    
+    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod4')
     return doc_db
 
 llm = ChatOpenAI()
