@@ -23,13 +23,31 @@ def doc_preprocessing():
     docs_split = text_splitter.split_documents(docs)
     return docs_split
 
+def is_index_populated(index_name, sample_doc_id):
+    """
+    Check if the given index in Pinecone is populated with the documents.
+    `sample_doc_id` is an identifier for a document you know should be in the index.
+    """
+    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
+    index = pinecone.Index(index_name)
+    response = index.query(ids=[sample_doc_id])
+    return len(response['results']) > 0
+
 @st.cache_resource
 def embedding_db():
     embeddings = OpenAIEmbeddings()
-    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
     docs_split = doc_preprocessing()
-    doc_db = Pinecone.from_documents(docs_split, embeddings, index_name='dod4')
-    return doc_db
+    index_name = 'dod4'
+    
+    # Check if the index is already populated
+    if not is_index_populated(index_name, '99656803-4652-4f14-b943-8d88d191265e'):
+        doc_db = Pinecone.from_documents(docs_split, embeddings, index_name=index_name)
+        return doc_db
+    else:
+        # Return the existing Pinecone index if already populated
+        pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
+        return pinecone.Index(index_name)
+
 
 llm = ChatOpenAI()
 doc_db = embedding_db()
